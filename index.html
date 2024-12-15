@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отто Ресторан - HR Бот</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .application-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        .application-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, select, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="application-form">
+        <h2>📝 Подать заявку на работу в Otto</h2>
+
+        <label for="name">Ваше имя:</label>
+        <input type="text" id="name" placeholder="Введите ваше имя" required>
+
+        <label for="surname">Ваша фамилия:</label>
+        <input type="text" id="surname" placeholder="Введите вашу фамилию" required>
+
+        <label for="phone">Телефон:</label>
+        <input type="tel" id="phone" placeholder="Введите номер телефона" required>
+
+        <label for="position">Желаемая должность:</label>
+        <select id="position" required>
+            <option value="" disabled selected>Выберите должность</option>
+            <option value="Официант">Официант</option>
+            <option value="Шеф-повар">Шеф-повар</option>
+            <option value="Бармен">Бармен</option>
+            <option value="Администратор">Администратор</option>
+        </select>
+
+        <label for="experience">Опыт работы (в годах):</label>
+        <input type="number" id="experience" placeholder="Введите опыт работы" required>
+
+        <label for="comment">Краткое описание себя:</label>
+        <textarea id="comment" rows="4" placeholder="Расскажите немного о себе"></textarea>
+
+        <label for="photo">Ваш портрет (фото):</label>
+        <input type="file" id="photo" accept="image/*" required>
+
+        <button onclick="submitApplication()">Отправить заявку</button>
+    </div>
+
+    <script>
+        async function submitApplication() {
+            const name = document.getElementById("name").value;
+            const surname = document.getElementById("surname").value;
+            const phone = document.getElementById("phone").value;
+            const position = document.getElementById("position").value;
+            const experience = document.getElementById("experience").value;
+            const comment = document.getElementById("comment").value;
+            const photo = document.getElementById("photo").files[0];
+
+            if (name && surname && phone && position && experience && photo) {
+                const message = `📋 Заявка на работу в Otto Ресторан:\n` +
+                                `👤 Имя: ${name}\n` +
+                                `👤 Фамилия: ${surname}\n` +
+                                `📞 Телефон: ${phone}\n` +
+                                `💼 Должность: ${position}\n` +
+                                `📊 Опыт: ${experience} лет\n` +
+                                `📝 О себе: ${comment || "Не указано"}`;
+
+                // Отправляем текстовую часть заявки
+                const botToken = "7161538113:AAF24dAHUGTlsSLRMa0l267MhlHhyO4R4xg";
+                const chatId = "7309059671";
+                const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+                await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chat_id: chatId, text: message })
+                });
+
+                // Отправляем фотографию
+                const formData = new FormData();
+                formData.append("chat_id", chatId);
+                formData.append("photo", photo);
+
+                const photoUrl = `https://api.telegram.org/bot${botToken}/sendPhoto`;
+                await fetch(photoUrl, {
+                    method: "POST",
+                    body: formData
+                });
+
+                alert("Заявка успешно отправлена!");
+            } else {
+                alert("Пожалуйста, заполните все поля и приложите фотографию!");
+            }
+        }
+    </script>
+</body>
+</html>
